@@ -5,7 +5,6 @@ public class InputManager : MonoSingleton<InputManager>
 {
     public event System.Action TouchStartEvent;
     public event System.Action TouchEndEvent;
-
     public void OnPointerDown()
     {
         TouchStartEvent?.Invoke();
@@ -15,4 +14,5 @@ public class InputManager : MonoSingleton<InputManager>
     {
         TouchEndEvent?.Invoke();
     }
+
 }
