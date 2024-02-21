@@ -10,6 +10,7 @@ public class Node
     public int gridX;
     public int gridY;
 
+    // A* pathfnding algorithm is being used
     public int gCost; // dsitance from start point
     public int hCost; // distance to target point
     public Node parent;

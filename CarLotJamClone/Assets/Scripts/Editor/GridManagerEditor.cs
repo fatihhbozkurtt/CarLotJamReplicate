@@ -12,10 +12,17 @@ public class GridManagerEditor : Editor
         {
             Grid grid = target as Grid;
 
-            grid.GenerateGrid();
-
-            EditorUtility.SetDirty(grid);
+            if (grid != null)
+            {
+                grid.GenerateGrid();
+                EditorUtility.SetDirty(grid);
+            }
+            else
+            {
+                Debug.LogError("Target is not a Grid component.");
+            }
         }
     }
 }
+
 

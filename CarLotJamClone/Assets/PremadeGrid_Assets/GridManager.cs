@@ -44,7 +44,7 @@ public class GridManager : MonoSingleton<GridManager>
                 GridPlan[x, y] = new CellStatsContainer();
                 GameObject cloneCellGO = Instantiate(CellPrefab, Vector3.zero, CellPrefab.transform.rotation, CellParent.transform);
                 cloneCellGO.transform.localPosition = new Vector3(CellXLength * x, 0, -(CellYLength * y));
-                cloneCellGO.GetComponent<CellController>().SetCoordinatesAndNode(x, y);
+                cloneCellGO.GetComponent<CellController>().SetCoordinatesAndNode(x, y, cloneCellGO.transform.localPosition -= new Vector3(((desiredRowCount - 1) / 2f) * CellXLength, 0, -((desiredColumnCount - 1) / 2f) * CellYLength));
 
                 GridPlan[x, y].PosX = x;
                 GridPlan[x, y].PosY = y;
@@ -55,7 +55,7 @@ public class GridManager : MonoSingleton<GridManager>
         }
         CellParent.transform.position = Vector3.zero;
 
-      
+
     }
 
     private void DestroyPreviousGrid()

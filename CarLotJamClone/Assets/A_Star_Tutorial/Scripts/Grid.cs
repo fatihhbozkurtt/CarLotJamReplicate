@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 
 public class Grid : MonoSingleton<Grid>
@@ -15,10 +14,17 @@ public class Grid : MonoSingleton<Grid>
     [SerializeField] CellController _cellPrefab;
 
     [Header("Debug")]
-    public List<Node> path;
+    public List<CellController> path;
     public List<CellController> cellControllers;
     Node[,] GridPlan;
 
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        GenerateGrid();
+    }
     public void GenerateGrid()
     {
         if (GridPlan != null)
@@ -34,18 +40,31 @@ public class Grid : MonoSingleton<Grid>
             for (int y = 0; y < desiredColumnCount; y++)
             {
                 Vector3 worldPoint = new Vector3(CellXLength * x, 0, -(CellYLength * y));
-                bool walkable = !(Physics.CheckSphere(worldPoint, .5f, unwalkableMask));
 
-                CellController controller = Instantiate(_cellPrefab, Vector3.zero, _cellPrefab.transform.rotation, _cellParentTr.transform);
-                controller.name = "CellController" + "(" + x + ", " + y + ")";
-                controller.transform.localPosition = new Vector3(CellXLength * x, 0, -(CellYLength * y));
+                CellController cellController = Instantiate(_cellPrefab, Vector3.zero, _cellPrefab.transform.rotation, _cellParentTr.transform);
+                cellController.name = "CellController" + "(" + x + ", " + y + ")";
+                cellController.transform.localPosition = new Vector3(CellXLength * x, 0, -(CellYLength * y));
 
-                GridPlan[x, y] = new Node(_walkable: walkable, _worldPos: worldPoint, x, y, _cell: controller);
+                GridPlan[x, y] = new Node(_walkable: true, _worldPos: worldPoint, x, y, _cell: cellController);
                 Node nodeClone = GridPlan[x, y];
-                controller.SetCoordinatesAndNode(x, y, node: nodeClone);
 
-                controller.transform.localPosition -= new Vector3(((desiredRowCount - 1) / 2f) * CellXLength, 0, -((desiredColumnCount - 1) / 2f) * CellYLength);
-                cellControllers.Add(controller);
+                Vector3 cellPos = cellController.transform.localPosition - new Vector3((desiredRowCount - 1) / 2f * CellXLength, 0, -((desiredColumnCount - 1) / 2f) * CellYLength);
+                cellController.SetCoordinatesAndNode(x, y, cellPos, node: nodeClone);
+                cellControllers.Add(cellController);
+
+                if (x == 0 && y == 0) cellController.SpawnedWithCharacter(ColorPreferences.Blue);
+                if (x == 4 && y == 4) cellController.SpawnedWithCharacter(ColorPreferences.Red);
+
+
+                if (y == 2)
+                {
+                    if (x > 1)
+                    {
+                        cellController.SetColor(Color.black);
+                        cellController.GetNode().walkable = false;
+                    }
+                }
+
             }
         }
         _cellParentTr.transform.position = Vector3.zero;
@@ -89,11 +108,34 @@ public class Grid : MonoSingleton<Grid>
         return neighbours;
     }
 
-    public Node NodeFromWorldPoint(Vector3 worldPosition)
+    private void DestroyPreviousGrid()
+    {
+        for (int x = 0; x < GridPlan.GetLength(0); x++)
+        {
+            for (int y = 0; y < GridPlan.GetLength(1); y++)
+            {
+                DestroyImmediate(GridPlan[x, y].cell);
+            }
+        }
+        foreach (Transform cellTr in _cellParentTr.transform)
+        {
+            DestroyImmediate(cellTr.gameObject);
+        }
+        cellControllers.Clear();
+    }
+    public void SetPathMaterial()
+    {
+        for (int i = 0; i < path.Count; i++)
+        {
+            CellController cell = path[i];
+            cell.SetColor(Color.black);
+        }
+    }
+}
+   /* public Node NodeFromWorldPoint(Vector3 worldPosition)
     {
         Vector2 gridWorldSize = new Vector2(gridSizeX * CellXLength, gridSizeY * CellYLength);
 
-        Debug.Log("World size: " + gridWorldSize);
         float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
         float percentY = (worldPosition.z + gridWorldSize.y / 2) / gridWorldSize.y;
         percentX = Mathf.Clamp01(percentX);
@@ -125,32 +167,4 @@ public class Grid : MonoSingleton<Grid>
         Debug.Log("Cell count = " + closestNode.cell.name);
 
         return closestNode;
-    }
-
-
-    private void DestroyPreviousGrid()
-    {
-        for (int x = 0; x < GridPlan.GetLength(0); x++)
-        {
-            for (int y = 0; y < GridPlan.GetLength(1); y++)
-            {
-                DestroyImmediate(GridPlan[x, y].cell);
-            }
-        }
-        foreach (Transform cellTr in _cellParentTr.transform)
-        {
-            DestroyImmediate(cellTr.gameObject);
-        }
-        cellControllers.Clear();
-    }
-    public void SetPathMaterial(List<Node> path)
-    {
-        for (int i = 0; i < path.Count; i++)
-        {
-            CellController cell = path[i].cell;
-            //cell.SetColor(Color.black);
-            cell.gameObject.SetActive(false);
-            cell.isPath = true;
-        }
-    }
-}
+    }*/

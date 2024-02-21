@@ -2,9 +2,6 @@
 using UnityEngine;
 public class PremadeInputManager : MonoBehaviour
 {
-    public event System.Action TouchStartEvent;
-    public event System.Action TouchEndEvent;
-
     private bool isTouchedDown = false;
     private CellController _touchedCell = null;
 
@@ -33,8 +30,8 @@ public class PremadeInputManager : MonoBehaviour
                 CellStatsContainer cellStats = GridManager.instance.GetCellStats(_touchedCell);
                 if (!cellStats.IsOccupied)
                 {
-                    _touchedCell.SetCrossImage(activate: true);
                     cellStats.IsOccupied = true;
+                    // _touchedCell.SetCrossImage(activate: true);
                     // GridManager.instance.CheckAndDestroyMatches();
                 }
             }
