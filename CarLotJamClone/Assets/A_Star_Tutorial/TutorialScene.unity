@@ -758,15 +758,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CellXLength: 1.1
   CellYLength: 1.1
-  unwalkableMask:
-    serializedVersion: 2
-    m_Bits: 64
   gridSizeX: 5
-  gridSizeY: 5
+  gridSizeY: 6
   _cellParentTr: {fileID: 1487798970}
   _cellPrefab: {fileID: 453428366268239577, guid: 17c91e2881ade314bbc16fa1ddf35f36, type: 3}
   path: []
-  cellControllers: []
+  cellControllers:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!114 &1019220976
 MonoBehaviour:
   m_ObjectHideFlags: 0

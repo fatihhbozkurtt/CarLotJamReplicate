@@ -8,7 +8,9 @@ public enum ColorPreferences
 
 public class CharacterHandler : MonoBehaviour
 {
-
+    [Header("References")]
+    [SerializeField] Renderer _renderer;
+    [SerializeField] Material[] _materials;
 
     [Header("Configuration")]
     [SerializeField] float moveSpeed;
@@ -18,8 +20,8 @@ public class CharacterHandler : MonoBehaviour
     [SerializeField] CellController targetCell;
     public List<Vector3> waypoints = new List<Vector3>();
     private int currentWaypointIndex = 0;
-    Node currentNode;
     bool moveToTargetCell;
+
     private void Start()
     {
         Pathfinding.instance.PathFoundEvent += OnNewPathFound;
@@ -28,8 +30,9 @@ public class CharacterHandler : MonoBehaviour
     public void Initialize(ColorPreferences colorPreferences, CellController cell)
     {
         currentCell = cell;
-        currentNode = currentCell.GetNode();
-        SetColorPreferences(colorPreferences);
+        currentCell.GetNode().SetWalkable(false);
+
+        SetCharacterColor(colorPreferences);
     }
 
     private void OnNewPathFound(List<CellController> cells)
@@ -41,12 +44,16 @@ public class CharacterHandler : MonoBehaviour
             Vector3 pos = cells[i].transform.position;
             waypoints.Add(pos);
         }
-        Debug.Log("Path found character is starting to move");
 
-        currentCell.GetReleased();
+        Debug.Log("Path found _characterPrefab is starting to move");
+
+        Node currentNode = currentCell.GetNode();
+        currentNode.SetWalkable(true);
+        
         targetCell = cells[cells.Count - 1];
-        //TODO: ayný cell i target almalarýný önleme amaçlý
-        // targetCell.GetNode().walkable = false;
+        Node targetNode = targetCell.GetNode();
+        targetNode.SetWalkable(false);
+
         moveToTargetCell = true;
     }
 
@@ -75,7 +82,8 @@ public class CharacterHandler : MonoBehaviour
             //---- Cell Adjustments
 
             currentCell = targetCell;
-            targetCell.SetColor(Color.white);
+            targetCell.SetMaterial();
+           // targetCell.GetNode().SetWalkable(true);
 
             targetCell = null;
         }
@@ -88,25 +96,22 @@ public class CharacterHandler : MonoBehaviour
         return currentCell;
     }
 
-    void SetColorPreferences(ColorPreferences colorPreference)
+    void SetCharacterColor(ColorPreferences colorPreference)
     {
-        Renderer renderer = GetComponentInChildren<Renderer>();
-
         switch (colorPreference)
         {
             case ColorPreferences.Red:
-                renderer.material.color = Color.red;
+                _renderer.sharedMaterial = _materials[0];
                 break;
             case ColorPreferences.Blue:
-                renderer.material.color = Color.blue;
+                _renderer.sharedMaterial = _materials[1];
                 break;
             case ColorPreferences.Green:
-                renderer.material.color = Color.green;
+                _renderer.sharedMaterial = _materials[2];
                 break;
             default:
                 break;
         }
-
     }
     #endregion
 }

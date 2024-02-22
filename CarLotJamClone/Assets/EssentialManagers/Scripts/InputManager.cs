@@ -20,10 +20,10 @@ public class InputManager : MonoSingleton<InputManager>
     public event NewCellSelectedEventDelegate NewCellSelectedEvent;
 
     [Header("Configuration")]
-    [SerializeField] Color _selectedCellColor;
+    [SerializeField] Material _selectedCellMaterial;
 
     [Header("Debug")]
-    [SerializeField] CharacterHandler selectedCaharacter;
+    [SerializeField] CharacterHandler selectedCharacter;
     private bool isTouchedDown = false;
     private CellController _touchedCell = null;
 
@@ -41,10 +41,10 @@ public class InputManager : MonoSingleton<InputManager>
                 {
                     if (hit.collider.TryGetComponent(out CharacterHandler character))
                     {
-                        selectedCaharacter = character;
+                        selectedCharacter = character;
                     }
 
-                    if (selectedCaharacter == null) return;
+                    if (selectedCharacter == null) return;
 
                     if (hit.collider.TryGetComponent(out CellController cell))
                     {
@@ -58,9 +58,10 @@ public class InputManager : MonoSingleton<InputManager>
             if (isTouchedDown && _touchedCell)
             { 
                 Node node = _touchedCell.GetNode();
+
                 if (node.walkable)
                 {
-                    _touchedCell.GetSelected(_selectedCellColor);
+                    _touchedCell.GetSelected();
                     OnNewCellSelected();
                 }
             }
@@ -72,18 +73,18 @@ public class InputManager : MonoSingleton<InputManager>
 
     void OnNewCellSelected()
     {
-        if (selectedCaharacter == null) return;
+        if (selectedCharacter == null) return;
 
-        CellController startCell = selectedCaharacter.GetCharCurrentCell();
+        CellController startCell = selectedCharacter.GetCharCurrentCell();
         CellController targetCell = _touchedCell;
 
         NewCellSelectedEvent?.Invoke(startCell, targetCell);
-        selectedCaharacter = null;
+        selectedCharacter = null;
     }
 
     public CharacterHandler GetSelectedCharacter()
     {
-        return selectedCaharacter;
+        return selectedCharacter;
     }
 
 }

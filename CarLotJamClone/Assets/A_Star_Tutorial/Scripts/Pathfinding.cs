@@ -44,13 +44,13 @@ public class Pathfinding : MonoSingleton<Pathfinding>
                 Debug.Log("A clear path is found");
                 RetracePath(startNode, targetNode);
                 pathFound = true;
-                break; // Exit the loop if the target firstNode is found
+                break;
             }
 
             foreach (Node neighbour in grid.GetNeighbours(firstNode))
             {
                 if (neighbour == firstNode) continue;
-                if (!neighbour.walkable || closedSet.Contains(neighbour))
+                if ((!neighbour.walkable && neighbour != firstNode) || closedSet.Contains(neighbour))
                 {
                     continue;
                 }
@@ -86,8 +86,8 @@ public class Pathfinding : MonoSingleton<Pathfinding>
             path.Add(currentNode.cell);
             currentNode = currentNode.parent;
         }
-        path.Reverse();
 
+        path.Reverse();
         PathFoundEvent?.Invoke(path);
         grid.path = path;
     }

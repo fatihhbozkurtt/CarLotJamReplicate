@@ -32,4 +32,9 @@ public class Node
             return gCost + hCost;
         }
     }
+
+    public void SetWalkable(bool _walkable)
+    {
+        this.walkable = _walkable;
+    }
 }

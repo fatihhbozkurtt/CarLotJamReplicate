@@ -59,8 +59,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 175fe7ef2386b8f448b5c26eb6e9e7ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentCell: {fileID: 0}
+  _renderer: {fileID: 5388579019307513707}
+  _materials:
+  - {fileID: 2100000, guid: 0ced979d0cf2db648b9446a87784d0d5, type: 2}
+  - {fileID: 2100000, guid: 5dae9e92498b09642add8a59d91e7fe6, type: 2}
+  - {fileID: 2100000, guid: ba12b75b7688f664e8b81898856973e5, type: 2}
   moveSpeed: 5
+  currentCell: {fileID: 0}
+  targetCell: {fileID: 0}
   waypoints: []
 --- !u!1 &7698547005773121526
 GameObject:
@@ -171,6 +177,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 313325ebc9a727d499217a5099ce2cef, type: 3}
+--- !u!137 &5388579019307513707 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -5596013728043535740, guid: 313325ebc9a727d499217a5099ce2cef, type: 3}
+  m_PrefabInstance: {fileID: 8691634163686770159}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &8385573765999638718 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 313325ebc9a727d499217a5099ce2cef, type: 3}
