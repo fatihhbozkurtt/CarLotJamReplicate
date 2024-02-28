@@ -1,4 +1,6 @@
+using DG.Tweening;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum ColorPreferences
@@ -10,6 +12,7 @@ public class CharacterHandler : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] Renderer _renderer;
+    [SerializeField] Material outlineMat;
     [SerializeField] Material[] _materials;
 
     [Header("Configuration")]
@@ -18,13 +21,20 @@ public class CharacterHandler : MonoBehaviour
     [Header("Debug")]
     [SerializeField] CellController currentCell;
     [SerializeField] CellController targetCell;
-    public List<Vector3> waypoints = new List<Vector3>();
-    private int currentWaypointIndex = 0;
+    [SerializeField] ColorPreferences _colorPreference;
+    [SerializeField] List<Vector3> waypoints;
+    PopUpCanvasController popUpCanvasController;
+    int currentWaypointIndex = 0;
     bool moveToTargetCell;
+
+    [Header("Test")]
+    public bool outline;
+    public bool removeOutline;
 
     private void Start()
     {
         Pathfinding.instance.PathFoundEvent += OnNewPathFound;
+        popUpCanvasController = GetComponentInChildren<PopUpCanvasController>();
     }
 
     public void Initialize(ColorPreferences colorPreferences, CellController cell)
@@ -45,20 +55,31 @@ public class CharacterHandler : MonoBehaviour
             waypoints.Add(pos);
         }
 
-        Debug.Log("Path found _characterPrefab is starting to move");
-
         Node currentNode = currentCell.GetNode();
         currentNode.SetWalkable(true);
-        
+
         targetCell = cells[cells.Count - 1];
         Node targetNode = targetCell.GetNode();
         targetNode.SetWalkable(false);
 
         moveToTargetCell = true;
+
+        popUpCanvasController.PopTheEmojiUp(isHappy: true);
     }
 
     private void Update()
     {
+        if (outline)
+        {
+            SetOutline();
+            outline = false;
+        }
+        if (removeOutline)
+        {
+            SetOutline(activate: false);
+            removeOutline = false;
+        }
+
         if (!moveToTargetCell) return;
         if (waypoints.Count == 0) return;
 
@@ -83,21 +104,65 @@ public class CharacterHandler : MonoBehaviour
 
             currentCell = targetCell;
             targetCell.SetMaterial();
-           // targetCell.GetNode().SetWalkable(true);
+
+            if (targetCell.CheckCellNearByCar())
+                HopInTheCar(targetCell.GetNearCar());
 
             targetCell = null;
         }
     }
 
-    #region Getters & Setters
-
-    public CellController GetCharCurrentCell()
+    void HopInTheCar(CarController targetCar)
     {
-        return currentCell;
+        if (targetCar.GetColor() != _colorPreference) return;
+        if (targetCar == null) return;
+        Vector3 seatPos = targetCar.GetSeatPos();
+
+        transform.DOMove(seatPos, .5f);
+        transform.DOScale(Vector3.zero, .5f).OnComplete(() =>
+        {
+            Node currentNode = currentCell.GetNode();
+            currentNode.SetWalkable(true);
+
+            Debug.Log("Character is in the car: " + _colorPreference);
+        });
+
     }
 
+
+
+    #region Getters & Setters
+    void SetOutline(bool activate = true)
+    {
+        if (!activate)
+        {
+            Material[] currentMaterials = _renderer.materials;
+            List<Material> newMaterialsList = new List<Material>(currentMaterials); // Convert to a list for easier manipulation
+
+            newMaterialsList.RemoveAt(newMaterialsList.Count - 1);
+            _renderer.materials = newMaterialsList.ToArray();
+        }
+        else
+        {
+
+            Material[] currentMaterials = _renderer.materials;
+            Material[] newMaterials = new Material[currentMaterials.Length + 1];
+
+            for (int i = 0; i < currentMaterials.Length; i++)
+            {
+                newMaterials[i] = currentMaterials[i];
+            }
+
+            Material newMat = outlineMat;
+            newMaterials[currentMaterials.Length] = newMat;
+
+            _renderer.materials = newMaterials;
+        }
+
+    }
     void SetCharacterColor(ColorPreferences colorPreference)
     {
+        _colorPreference = colorPreference;
         switch (colorPreference)
         {
             case ColorPreferences.Red:
@@ -112,6 +177,14 @@ public class CharacterHandler : MonoBehaviour
             default:
                 break;
         }
+    }
+    public CellController GetCharCurrentCell()
+    {
+        return currentCell;
+    }
+    public ColorPreferences GetCharacterColor()
+    {
+        return _colorPreference;
     }
     #endregion
 }

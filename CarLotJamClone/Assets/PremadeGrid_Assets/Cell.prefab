@@ -138,12 +138,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _characterPrefab: {fileID: 3363140172787762740, guid: 487797f4923624b459eef27ce1895dad, type: 3}
   _obstaclePrefab: {fileID: 4149660882163638161, guid: 00a7e9a1d91edc447b1f0e6a3d95cab0, type: 3}
+  _carPrefab: {fileID: 4345411503256830419, guid: 042d9be6f67623749baff9305a01a909, type: 3}
   _renderer: {fileID: 267985008599204076}
+  carLayer:
+    serializedVersion: 2
+    m_Bits: 128
   _defaultMaterial: {fileID: 2100000, guid: df503c8e057e65f4cb3e495ef87dd796, type: 2}
   _selectedMaterial: {fileID: 2100000, guid: 7ec76bf903d6608479336ffd0ff21a76, type: 2}
   _failedMaterial: {fileID: 2100000, guid: 8b870fdbdd5d2e74db1ee7fe3777644d, type: 2}
+  _isSelected: 0
   _coordinates: {x: 0, y: 0}
-  hasCharacter: 0
 --- !u!1 &5590489094625516473
 GameObject:
   m_ObjectHideFlags: 0
@@ -256,7 +260,7 @@ GameObject:
   - component: {fileID: 3861027129671656677}
   - component: {fileID: 3250838185396002363}
   - component: {fileID: 267985008599204076}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}

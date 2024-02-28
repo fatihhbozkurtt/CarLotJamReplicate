@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Grid : MonoSingleton<Grid>
 {
-    public event System.Action<List<Node>> NewGridCreatedEvent;
+    public event System.Action NewGridCreatedEvent;
 
     [Header("Configuration")]
     [SerializeField] float CellXLength;
@@ -51,22 +51,39 @@ public class Grid : MonoSingleton<Grid>
                 cellController.Initialize(x, y, cellPos, node: nodeClone);
                 cellControllers.Add(cellController);
 
-                if (x == 0 && y == 0) cellController.SpawnedWithCharacter(ColorPreferences.Blue);
-                if (x == 4 && y == 4) cellController.SpawnedWithCharacter(ColorPreferences.Red);
-                if (x == 0 && y == 5) cellController.SpawnedWithCharacter(ColorPreferences.Green);
 
+                #region Temporary Test Region
+
+                if (x == 0 && y == 0) cellController.SpawnedWithCharacter(ColorPreferences.Blue);
+                if (x == 4 && y == 3) cellController.SpawnedWithCharacter(ColorPreferences.Red);
+                if (x == 0 && y == 5) cellController.SpawnedWithCharacter(ColorPreferences.Green);
+                if (x > 2 && x < 6 && y == 1) cellController.SpawnedAsObstacle();
 
                 if (y == 2)
                 {
-                    if (x > 1)
+                    if (x == 2)
                     {
-                        cellController.SpawnedAsObstacle();
+                        cellController.SpawnWithCar(ColorPreferences.Red, LookDirection.Forward);
                     }
+
                 }
+
+                if (y == 2)
+                {
+                    if (x == 4) cellController.SpawnWithCar(ColorPreferences.Green, LookDirection.Left);
+                }
+
+                if (y == 6)
+                {
+                    if (x == 3) cellController.SpawnWithCar(ColorPreferences.Blue, LookDirection.Right);
+                }
+                #endregion
 
             }
         }
         _cellParentTr.transform.position = Vector3.zero;
+
+        NewGridCreatedEvent?.Invoke();
     }
 
     public List<Node> GetNeighbours(Node node)
@@ -106,7 +123,28 @@ public class Grid : MonoSingleton<Grid>
         }
         return neighbours;
     }
+    public List<CellController> GetNeighboursByAxis(Vector2 originCoordinates, bool horizontalAxis)
+    {
+        List<CellController> neighbours = new List<CellController>();
+        CellController firstNeighbour;
+        CellController secondNeighour;
 
+        if (horizontalAxis)
+        {
+            firstNeighbour = GridPlan[(int)originCoordinates.x + 1, (int)originCoordinates.y].cell;
+            secondNeighour = GridPlan[(int)originCoordinates.x - 1, (int)originCoordinates.y].cell;
+        }
+        else
+        {
+            firstNeighbour = GridPlan[(int)originCoordinates.x, (int)originCoordinates.y + 1].cell;
+            secondNeighour = GridPlan[(int)originCoordinates.x, (int)originCoordinates.y - 1].cell;
+        }
+
+        if (firstNeighbour != null) neighbours.Add(firstNeighbour);
+        if (secondNeighour != null) neighbours.Add(secondNeighour);
+
+        return neighbours;
+    }
     private void DestroyPreviousGrid()
     {
         cellControllers.Clear();
